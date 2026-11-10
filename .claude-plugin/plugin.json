@@ -1,0 +1,40 @@
+{
+  "name": "claude-hub",
+  "version": "1.0.0",
+  "description": "Personal Claude ecosystem and productivity toolkit — 6 Skills, 7 Agents, 8 Commands",
+  "author": "JaeYun0507",
+  "homepage": "https://jaeyun0507.github.io/Claude-Hub",
+  "repository": "https://github.com/JaeYun0507/Claude-Hub",
+  "license": "MIT",
+  "skills": [
+    "skills/research-assistant/SKILL.md",
+    "skills/document-assistant/SKILL.md",
+    "skills/coding-assistant/SKILL.md",
+    "skills/business-assistant/SKILL.md",
+    "skills/data-analyst/SKILL.md",
+    "skills/legal-research/SKILL.md"
+  ],
+  "commands": [
+    "commands/research.md",
+    "commands/analyze.md",
+    "commands/review.md",
+    "commands/report.md",
+    "commands/business-plan.md",
+    "commands/legal-research.md",
+    "commands/summarize.md",
+    "commands/automate.md"
+  ],
+  "agents": [
+    "agents/research-agent.md",
+    "agents/coding-agent.md",
+    "agents/business-agent.md",
+    "agents/legal-agent.md",
+    "agents/data-agent.md",
+    "agents/writing-agent.md",
+    "agents/automation-agent.md"
+  ],
+  "hooks": "hooks/hooks.json",
+  "mcp": ".mcp.json.example",
+  "keywords": ["productivity", "research", "coding", "business", "legal", "data-analysis"],
+  "minClaudeVersion": "1.0.0"
+}

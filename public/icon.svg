@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F1117"/>
+      <stop offset="100%" style="stop-color:#1A1D2E"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8824A"/>
+      <stop offset="100%" style="stop-color:#D4603A"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6"/>
+      <stop offset="100%" style="stop-color:#6D28D9"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- Hub circle center -->
+  <circle cx="256" cy="256" r="52" fill="none" stroke="url(#accent)" stroke-width="4"/>
+  <circle cx="256" cy="256" r="30" fill="url(#accent)" opacity="0.9"/>
+  <!-- Orbit lines -->
+  <circle cx="256" cy="256" r="110" fill="none" stroke="#E8824A" stroke-width="1.5" opacity="0.25"/>
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#8B5CF6" stroke-width="1.5" opacity="0.2"/>
+  <!-- Node dots on orbit -->
+  <circle cx="256" cy="146" r="12" fill="url(#accent)"/>
+  <circle cx="366" cy="256" r="12" fill="url(#accent)"/>
+  <circle cx="256" cy="366" r="12" fill="url(#accent)"/>
+  <circle cx="146" cy="256" r="12" fill="url(#accent)"/>
+  <!-- Diagonal nodes on outer orbit -->
+  <circle cx="334" cy="178" r="9" fill="url(#glow)"/>
+  <circle cx="334" cy="334" r="9" fill="url(#glow)"/>
+  <circle cx="178" cy="334" r="9" fill="url(#glow)"/>
+  <circle cx="178" cy="178" r="9" fill="url(#glow)"/>
+  <!-- Connecting lines from center to inner nodes -->
+  <line x1="256" y1="226" x2="256" y2="158" stroke="#E8824A" stroke-width="2" opacity="0.6"/>
+  <line x1="286" y1="256" x2="354" y2="256" stroke="#E8824A" stroke-width="2" opacity="0.6"/>
+  <line x1="256" y1="286" x2="256" y2="354" stroke="#E8824A" stroke-width="2" opacity="0.6"/>
+  <line x1="226" y1="256" x2="158" y2="256" stroke="#E8824A" stroke-width="2" opacity="0.6"/>
+  <!-- Subtle "C" lettermark hint -->
+  <text x="244" y="268" font-family="'SF Pro Display', -apple-system, sans-serif" font-size="28" font-weight="700" fill="white" opacity="0.95">C</text>
+</svg>

@@ -1,0 +1,34 @@
+{
+  "name": "Claude-Hub",
+  "short_name": "Claude-Hub",
+  "description": "Personal Claude Ecosystem Platform — Skills, Agents, Commands Dashboard",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0F1117",
+  "theme_color": "#E8824A",
+  "lang": "ko",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/public/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Overview",
+      "url": "/#overview",
+      "description": "대시보드 개요"
+    },
+    {
+      "name": "Skills Library",
+      "url": "/#skills",
+      "description": "스킬 라이브러리"
+    }
+  ]
+}

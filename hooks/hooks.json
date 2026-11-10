@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "hooks": {
+    "pre_response": [
+      {
+        "name": "language-enforcer",
+        "description": "한국어 응답 기본 설정",
+        "enabled": true,
+        "condition": "always",
+        "action": "prepend_system",
+        "content": "기본 응답 언어는 한국어입니다. 사용자가 다른 언어를 명시하면 그 언어를 사용합니다."
+      }
+    ],
+    "post_response": [
+      {
+        "name": "source-reminder",
+        "description": "법률·의료·금융 응답에 출처 확인 권고 추가",
+        "enabled": true,
+        "condition": "contains_legal_medical_financial",
+        "action": "append_note",
+        "content": "⚠️ 위 정보는 참고용이며 중요한 결정 전 전문가 확인을 권장합니다."
+      }
+    ],
+    "on_command": [
+      {
+        "name": "command-logger",
+        "description": "실행된 명령어 로깅 (로컬 전용)",
+        "enabled": false,
+        "commands": ["research", "analyze", "review", "report", "business-plan", "legal-research", "summarize", "automate"],
+        "action": "log_to_file",
+        "logPath": "./output/command-history.log",
+        "note": "활성화하려면 enabled를 true로 변경하고 output 디렉터리 생성 필요"
+      }
+    ]
+  },
+  "notes": "hooks.json은 Claude Plugin 규격에 따라 작동합니다. 현재 버전에서 지원되는 훅 타입은 Claude Code 공식 문서에서 확인하세요."
+}

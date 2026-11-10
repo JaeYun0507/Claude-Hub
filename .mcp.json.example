@@ -1,0 +1,44 @@
+{
+  "_README": "이 파일은 MCP 연동 설정 예제입니다. 실제 사용 시 .mcp.json으로 복사하고 API Key를 환경 변수로 설정하세요. .mcp.json은 .gitignore에 포함되어 있으며 절대 Git에 커밋하지 마세요.",
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "_status": "설정 가이드 제공 — 직접 연동 필요",
+      "_doc": "https://github.com/modelcontextprotocol/servers/tree/main/src/github"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "./"],
+      "_status": "설정 가이드 제공 — 직접 연동 필요",
+      "_doc": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
+    },
+    "web-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+      },
+      "_status": "설정 가이드 제공 — Brave Search API Key 필요 (무료 플랜 월 2000회)",
+      "_doc": "https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search"
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-notion"],
+      "env": {
+        "NOTION_API_KEY": "${NOTION_API_KEY}"
+      },
+      "_status": "설정 가이드 제공 — Notion Integration 생성 필요",
+      "_doc": "https://github.com/modelcontextprotocol/servers"
+    }
+  },
+  "_usage": {
+    "step1": "cp .mcp.json.example .mcp.json (또는 복사)",
+    "step2": ".env 파일에 API Key 설정",
+    "step3": "Claude Code에서 MCP 서버 활성화",
+    "step4": ".mcp.json은 절대 Git에 커밋하지 않는다"
+  }
+}

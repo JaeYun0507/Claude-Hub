@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "plugins": {
+    "claude-hub": {
+      "enabled": true,
+      "path": ".claude-plugin/plugin.json"
+    }
+  },
+  "permissions": {
+    "filesystem": {
+      "read": ["./"],
+      "write": ["./output", "./reports"]
+    },
+    "network": false,
+    "shell": false
+  },
+  "defaults": {
+    "language": "ko",
+    "outputFormat": "markdown"
+  }
+}

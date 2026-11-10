@@ -1,0 +1,54 @@
+# Claude-Hub — .gitignore
+
+# 환경 변수 및 비밀정보 (절대 커밋 금지)
+.env
+.env.local
+.env.*.local
+*.key
+*.secret
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# 의존성
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# 빌드 결과물
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 로그 및 임시 파일
+*.log
+*.tmp
+*.temp
+.cache/
+tmp/
+
+# 테스트 결과
+.coverage
+htmlcov/
+.pytest_cache/
+test-results/
+
+# MCP 실제 설정 (예제만 커밋)
+.mcp.json

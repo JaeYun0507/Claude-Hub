@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="description" content="Claude-Hub — Personal Claude Ecosystem Platform. Skills, Agents, Commands를 하나의 대시보드에서 관리합니다."/>
+  <meta name="theme-color" content="#E8824A"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Claude-Hub"/>
+  <link rel="manifest" href="/public/manifest.json"/>
+  <link rel="icon" href="/public/icon.svg" type="image/svg+xml"/>
+  <link rel="apple-touch-icon" href="/public/icon.svg"/>
+  <title>Claude-Hub — Personal Claude Ecosystem</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet"/>
+  <style>
+    /* ═══════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════ */
+    :root {
+      --bg-base:       #090A0F;
+      --bg-surface:    #0F1117;
+      --bg-elevated:   #161822;
+      --bg-card:       #1A1D2E;
+      --bg-hover:      #1F2235;
+      --border:        rgba(255,255,255,0.07);
+      --border-accent: rgba(232,130,74,0.35);
+      --accent:        #E8824A;
+      --accent-dim:    rgba(232,130,74,0.12);
+      --accent-hover:  #F09460;
+      --purple:        #8B5CF6;
+      --purple-dim:    rgba(139,92,246,0.12);
+      --blue:          #3B82F6;
+      --blue-dim:      rgba(59,130,246,0.12);
+      --green:         #10B981;
+      --green-dim:     rgba(16,185,129,0.12);
+      --text-primary:  #F0F2F8;
+      --text-secondary:#9CA3AF;
+      --text-muted:    #6B7280;
+      --sidebar-w:     240px;
+      --header-h:      60px;
+      --nav-h:         64px;
+      --radius:        10px;
+      --radius-sm:     6px;
+      --font:          'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --transition:    0.18s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ═══════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    ul { list-style: none; }
+    img, svg { display: block; }
+
+    /* ═══════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════ */
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      grid-template-rows: var(--header-h) 1fr;
+      min-height: 100dvh;
+    }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR (Desktop)
+    ═══════════════════════════════════════ */
+    .sidebar {
+      grid-row: 1 / -1;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px;
+      height: var(--header-h);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #E8824A, #D4603A);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; color: white;
+      flex-shrink: 0;
+    }
+    .logo-text { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo-badge {
+      font-size: 10px; font-weight: 600;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--border-accent);
+      border-radius: 4px;
+      padding: 1px 6px;
+      margin-left: auto;
+    }
+
+    .nav-section { padding: 16px 12px 8px; }
+    .nav-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 0 8px; margin-bottom: 4px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: var(--radius-sm);
+      font-size: 13.5px; font-weight: 500; color: var(--text-secondary);
+      cursor: pointer; transition: all var(--transition);
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .nav-item.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-color: var(--border-accent);
+    }
+    .nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.8; }
+    .nav-item.active .nav-icon { opacity: 1; }
+    .nav-count {
+      margin-left: auto; font-size: 11px; font-weight: 600;
+      background: var(--bg-elevated); color: var(--text-muted);
+      border-radius: 10px; padding: 1px 7px; min-width: 22px; text-align: center;
+    }
+    .nav-item.active .nav-count {
+      background: var(--accent-dim); color: var(--accent);
+    }
+
+    .sidebar-footer {
+      margin-top: auto; padding: 16px 12px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .version-badge {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      background: var(--bg-elevated); border: 1px solid var(--border);
+    }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+      box-shadow: 0 0 6px var(--green);
+    }
+    .version-info { flex: 1; }
+    .version-label { font-size: 11px; color: var(--text-muted); }
+    .version-num { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+
+    /* ═══════════════════════════════════════
+       HEADER (Desktop topbar)
+    ═══════════════════════════════════════ */
+    .header {
+      grid-column: 2;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 24px; gap: 16px;
+      position: sticky; top: 0; z-index: 40;
+    }
+    .header-title { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+    .header-subtitle { font-size: 12px; color: var(--text-muted); }
+    .header-spacer { flex: 1; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 500;
+      transition: all var(--transition); cursor: pointer;
+    }
+    .btn-ghost {
+      color: var(--text-secondary); border: 1px solid var(--border);
+      background: transparent;
+    }
+    .btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); border-color: rgba(255,255,255,0.12); }
+    .btn-primary {
+      background: var(--accent); color: white;
+      border: 1px solid transparent;
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    /* ═══════════════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════════════ */
+    .main {
+      grid-column: 2;
+      overflow-y: auto;
+      padding: 28px 24px 40px;
+    }
+
+    /* ═══════════════════════════════════════
+       PAGE SECTIONS
+    ═══════════════════════════════════════ */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-header { margin-bottom: 24px; }
+    .page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .page-desc { font-size: 13.5px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ═══════════════════════════════════════
+       STAT CARDS
+    ═══════════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .stat-card:hover {
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .stat-label { font-size: 11.5px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.02em; }
+    .stat-value {
+      font-size: 32px; font-weight: 700; letter-spacing: -1px;
+      font-variant-numeric: tabular-nums;
+      margin: 6px 0 2px;
+    }
+    .stat-sub { font-size: 11.5px; color: var(--text-muted); }
+    .stat-card.accent .stat-value { color: var(--accent); }
+    .stat-card.purple .stat-value { color: var(--purple); }
+    .stat-card.blue .stat-value { color: var(--blue); }
+    .stat-card.green .stat-value { color: var(--green); }
+
+    /* ═══════════════════════════════════════
+       GRID LAYOUTS
+    ═══════════════════════════════════════ */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+    /* ═══════════════════════════════════════
+       CARDS
+    ═══════════════════════════════════════ */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .card:hover {
+      border-color: rgba(255,255,255,0.11);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+    }
+    .card-title { font-size: 14px; font-weight: 600; }
+    .card-action {
+      margin-left: auto; font-size: 12px; color: var(--accent);
+      cursor: pointer; font-weight: 500;
+      transition: opacity var(--transition);
+    }
+    .card-action:hover { opacity: 0.75; }
+    .card-body { padding: 16px 20px; }
+
+    /* ═══════════════════════════════════════
+       SKILL / AGENT ITEMS
+    ═══════════════════════════════════════ */
+    .item-list { display: flex; flex-direction: column; gap: 2px; }
+    .item-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      transition: background var(--transition);
+      cursor: default;
+    }
+    .item-row:hover { background: var(--bg-hover); }
+    .item-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+    }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-desc { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-badge {
+      font-size: 10.5px; font-weight: 600; padding: 2px 8px;
+      border-radius: 20px; flex-shrink: 0;
+    }
+    .badge-ready { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+    .badge-guide { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+
+    /* ═══════════════════════════════════════
+       COMMAND TABLE
+    ═══════════════════════════════════════ */
+    .cmd-table { width: 100%; border-collapse: collapse; }
+    .cmd-table th {
+      text-align: left; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 8px 12px; border-bottom: 1px solid var(--border);
+    }
+    .cmd-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .cmd-table tr:last-child td { border-bottom: none; }
+    .cmd-table tr:hover td { background: var(--bg-hover); }
+    .cmd-name {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 12.5px; color: var(--accent); font-weight: 600;
+    }
+
+    /* ═══════════════════════════════════════
+       MCP GRID
+    ═══════════════════════════════════════ */
+    .mcp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 12px; }
+    .mcp-card {
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .mcp-card:hover { border-color: rgba(255,255,255,0.12); }
+    .mcp-top { display: flex; align-items: center; gap: 10px; }
+    .mcp-icon { font-size: 22px; }
+    .mcp-name { font-size: 13.5px; font-weight: 700; }
+    .mcp-status { font-size: 11px; color: var(--text-muted); }
+    .mcp-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+    .mcp-action {
+      margin-top: auto; font-size: 12px; font-weight: 600;
+      color: var(--accent); cursor: pointer; padding-top: 8px;
+      border-top: 1px solid var(--border);
+      transition: opacity var(--transition);
+    }
+    .mcp-action:hover { opacity: 0.75; }
+
+    /* ═══════════════════════════════════════
+       ACTIVITY FEED
+    ═══════════════════════════════════════ */
+    .activity-list { display: flex; flex-direction: column; gap: 0; }
+    .activity-item {
+      display: flex; gap: 12px;
+      padding: 11px 0; border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0; margin-top: 5px;
+    }
+    .activity-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .activity-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ═══════════════════════════════════════
+       SECTION HEADERS
+    ═══════════════════════════════════════ */
+    .section-title {
+      font-size: 15px; font-weight: 700; letter-spacing: -0.3px;
+      margin-bottom: 14px;
+    }
+    .section { margin-bottom: 28px; }
+
+    /* ═══════════════════════════════════════
+       DOCUMENTATION GRID
+    ═══════════════════════════════════════ */
+    .doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap: 12px; }
+    .doc-card {
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px;
+      transition: border-color var(--transition), background var(--transition);
+      cursor: pointer;
+    }
+    .doc-card:hover { border-color: rgba(255,255,255,0.12); background: var(--bg-hover); }
+    .doc-emoji { font-size: 22px; margin-bottom: 8px; }
+    .doc-name { font-size: 13.5px; font-weight: 700; margin-bottom: 4px; }
+    .doc-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ═══════════════════════════════════════
+       TOAST NOTIFICATION
+    ═══════════════════════════════════════ */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      color: var(--text-primary); border-radius: var(--radius);
+      padding: 12px 18px; font-size: 13px; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      display: none; z-index: 9999;
+      animation: slideIn 0.25s ease;
+    }
+    .toast.show { display: block; }
+    @keyframes slideIn {
+      from { transform: translateY(16px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ═══════════════════════════════════════
+       MOBILE NAV (bottom)
+    ═══════════════════════════════════════ */
+    .mobile-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .mobile-nav-items {
+      display: flex; justify-content: space-around; align-items: center;
+    }
+    .mobile-nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 6px 12px; border-radius: var(--radius-sm);
+      font-size: 10px; color: var(--text-muted);
+      cursor: pointer; transition: color var(--transition);
+      min-width: 56px;
+    }
+    .mobile-nav-item.active { color: var(--accent); }
+    .mobile-nav-item svg { width: 22px; height: 22px; }
+
+    /* ═══════════════════════════════════════
+       MOBILE HEADER
+    ═══════════════════════════════════════ */
+    .mobile-header {
+      display: none;
+      position: fixed; top: 0; left: 0; right: 0;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: max(14px, env(safe-area-inset-top)) 20px 14px;
+      z-index: 100;
+      align-items: center; gap: 10px;
+    }
+    .mobile-logo { font-size: 17px; font-weight: 700; }
+    .mobile-version { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      :root { --sidebar-w: 200px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+      .sidebar { display: none; }
+      .header { display: none; }
+      .mobile-header { display: flex; }
+      .mobile-nav { display: block; }
+      .main {
+        grid-column: 1;
+        padding: calc(var(--header-h) + max(14px, env(safe-area-inset-top)) + 14px + 10px) 16px calc(var(--nav-h) + 16px);
+      }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .page-title { font-size: 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .mcp-grid { grid-template-columns: 1fr; }
+    }
+
+    /* iPad specific */
+    @media (min-width: 768px) and (max-width: 1024px) and (pointer: coarse) {
+      .sidebar { display: flex; --sidebar-w: 220px; }
+      .header { display: flex; }
+      .mobile-header { display: none; }
+      .mobile-nav { display: none; }
+      .main { grid-column: 2; padding: 24px 20px 32px; }
+      .app { grid-template-columns: var(--sidebar-w) 1fr; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     MOBILE HEADER
+══════════════════════════════════ -->
+<header class="mobile-header" id="mobileHeader">
+  <div class="logo-icon">C</div>
+  <span class="mobile-logo">Claude-Hub</span>
+  <span class="mobile-version">v1.0.0</span>
+</header>
+
+<!-- ══════════════════════════════════
+     APP SHELL
+══════════════════════════════════ -->
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">C</div>
+      <span class="logo-text">Claude-Hub</span>
+      <span class="logo-badge">v1.0</span>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" data-page="overview" onclick="navigate('overview', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </div>
+      <div class="nav-item" data-page="skills" onclick="navigate('skills', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Skills Library
+        <span class="nav-count">6</span>
+      </div>
+      <div class="nav-item" data-page="agents" onclick="navigate('agents', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Agents
+        <span class="nav-count">7</span>
+      </div>
+      <div class="nav-item" data-page="commands" onclick="navigate('commands', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        Commands
+        <span class="nav-count">8</span>
+      </div>
+    </nav>
+
+    <nav class="nav-section">
+      <div class="nav-label">Integration</div>
+      <div class="nav-item" data-page="mcp" onclick="navigate('mcp', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        MCP Integrations
+      </div>
+      <div class="nav-item" data-page="projects" onclick="navigate('projects', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Projects
+      </div>
+    </nav>
+
+    <nav class="nav-section">
+      <div class="nav-label">Resources</div>
+      <div class="nav-item" data-page="docs" onclick="navigate('docs', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Documentation
+      </div>
+      <div class="nav-item" data-page="settings" onclick="navigate('settings', this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="version-badge">
+        <div class="status-dot"></div>
+        <div class="version-info">
+          <div class="version-label">System Status</div>
+          <div class="version-num">claude-hub v1.0.0</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- DESKTOP HEADER -->
+  <header class="header">
+    <div>
+      <div class="header-title" id="headerTitle">Overview</div>
+      <div class="header-subtitle">Claude-Hub Dashboard</div>
+    </div>
+    <div class="header-spacer"></div>
+    <div class="header-actions">
+      <a href="https://github.com/JaeYun0507/Claude-Hub" target="_blank" rel="noopener" class="btn btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <button class="btn btn-primary" onclick="showToast('플러그인 설치 가이드는 GitHub README를 확인하세요.')">
+        플러그인 설치
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ═══════════════ OVERVIEW ═══════════════ -->
+    <div class="page active" id="page-overview">
+      <div class="page-header">
+        <div class="page-title">Overview</div>
+        <div class="page-desc">Claude-Hub 플러그인 현황 및 최근 활동을 한눈에 확인합니다.</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card accent">
+          <div class="stat-label">Skills</div>
+          <div class="stat-value">6</div>
+          <div class="stat-sub">Research · Document · Coding · Business · Data · Legal</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Agents</div>
+          <div class="stat-value">7</div>
+          <div class="stat-sub">Research · Coding · Business · Legal · Data · Writing · Auto</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Commands</div>
+          <div class="stat-value">8</div>
+          <div class="stat-sub">/research /analyze /review /report +4</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">MCP Ready</div>
+          <div class="stat-value">4</div>
+          <div class="stat-sub">GitHub · Filesystem · Web Search · Notion</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <div class="card-title">Quick Skills</div>
+            <span class="card-action" onclick="navigate('skills', document.querySelector('[data-page=skills]'))">전체 보기</span>
+          </div>
+          <div class="card-body">
+            <div class="item-list">
+              <div class="item-row">
+                <div class="item-icon" style="background:rgba(232,130,74,0.12)">🔍</div>
+                <div class="item-info"><div class="item-name">Research Assistant</div><div class="item-desc">자료 조사 · 핵심 추출 · 출처 정리</div></div>
+                <span class="item-badge badge-ready">Ready</span>
+              </div>
+              <div class="item-row">
+                <div class="item-icon" style="background:rgba(139,92,246,0.12)">💻</div>
+                <div class="item-info"><div class="item-name">Coding Assistant</div><div class="item-desc">코드 리뷰 · 버그 분석 · 리팩터링</div></div>
+                <span class="item-badge badge-ready">Ready</span>
+              </div>
+              <div class="item-row">
+                <div class="item-icon" style="background:rgba(59,130,246,0.12)">⚖️</div>
+                <div class="item-info"><div class="item-name">Legal Research</div><div class="item-desc">법령 조사 · 판례 · 계약서 검토</div></div>
+                <span class="item-badge badge-ready">Ready</span>
+              </div>
+              <div class="item-row">
+                <div class="item-icon" style="background:rgba(16,185,129,0.12)">📊</div>
+                <div class="item-info"><div class="item-name">Data Analyst</div><div class="item-desc">CSV 분석 · 통계 · EDA 보고서</div></div>
+                <span class="item-badge badge-ready">Ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div class="card-title">Recent Activity</div>
+          </div>
+          <div class="card-body">
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-dot"></div>
+                <div>
+                  <div class="activity-text">Claude-Hub v1.0.0 초기 릴리즈 — 6 Skills, 7 Agents, 8 Commands</div>
+                  <div class="activity-time">방금 전</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:var(--purple)"></div>
+                <div>
+                  <div class="activity-text">Legal Research Skill 공식 면책 조항 추가</div>
+                  <div class="activity-time">방금 전</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:var(--blue)"></div>
+                <div>
+                  <div class="activity-text">MCP 연동 예제 설정 파일(.mcp.json.example) 추가</div>
+                  <div class="activity-time">방금 전</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:var(--green)"></div>
+                <div>
+                  <div class="activity-text">GitHub Pages 배포 완료 — PWA 지원</div>
+                  <div class="activity-time">방금 전</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div class="card">
+          <div class="card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            <div class="card-title">Quick Commands</div>
+            <span class="card-action" onclick="navigate('commands', document.querySelector('[data-page=commands]'))">전체 보기</span>
+          </div>
+          <div class="card-body">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <span onclick="copyCmd('/research')" style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; padding:5px 11px; cursor:pointer; color:var(--accent); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">/research</span>
+              <span onclick="copyCmd('/analyze')" style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; padding:5px 11px; cursor:pointer; color:var(--accent); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">/analyze</span>
+              <span onclick="copyCmd('/review')" style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; padding:5px 11px; cursor:pointer; color:var(--accent); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">/review</span>
+              <span onclick="copyCmd('/report')" style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; padding:5px 11px; cursor:pointer; color:var(--accent); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">/report</span>
+              <span onclick="copyCmd('/business-plan')" style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; padding:5px 11px; cursor:pointer; color:var(--accent); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">/business-plan</span>
+              <span onclick="copyCmd('/legal-research')" style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; padding:5px 11px; cursor:pointer; color:var(--accent); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">/legal-research</span>
+              <span onclick="copyCmd('/summarize')" style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; padding:5px 11px; cursor:pointer; color:var(--accent); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">/summarize</span>
+              <span onclick="copyCmd('/automate')" style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; padding:5px 11px; cursor:pointer; color:var(--accent); transition:all 0.15s;" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">/automate</span>
+            </div>
+            <div style="margin-top:10px; font-size:12px; color:var(--text-muted);">클릭하면 명령어가 클립보드에 복사됩니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ SKILLS ═══════════════ -->
+    <div class="page" id="page-skills">
+      <div class="page-header">
+        <div class="page-title">Skills Library</div>
+        <div class="page-desc">Claude Code에서 사용할 수 있는 6개의 재사용 가능한 Skills입니다.</div>
+      </div>
+      <div class="grid-3">
+        <div class="card" style="cursor:pointer;" onclick="showToast('GitHub에서 skills/research-assistant/SKILL.md를 확인하세요.')">
+          <div class="card-header">
+            <div class="item-icon" style="background:rgba(232,130,74,0.12); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">🔍</div>
+            <div class="card-title">Research Assistant</div>
+            <span class="item-badge badge-ready" style="margin-left:auto;">Ready</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">자료 조사, 핵심 정보 추출, 출처 정리, 비교 분석을 수행합니다.</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">자료 조사</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">핵심 추출</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">비교 분석</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showToast('GitHub에서 skills/document-assistant/SKILL.md를 확인하세요.')">
+          <div class="card-header">
+            <div class="item-icon" style="background:rgba(139,92,246,0.12); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">📝</div>
+            <div class="card-title">Document Assistant</div>
+            <span class="item-badge badge-ready" style="margin-left:auto;">Ready</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">문서 작성, 요약, 보고서 생성, Markdown 정리를 수행합니다.</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">문서 작성</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">요약</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">보고서</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showToast('GitHub에서 skills/coding-assistant/SKILL.md를 확인하세요.')">
+          <div class="card-header">
+            <div class="item-icon" style="background:rgba(59,130,246,0.12); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">💻</div>
+            <div class="card-title">Coding Assistant</div>
+            <span class="item-badge badge-ready" style="margin-left:auto;">Ready</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">코드 리뷰, 버그 분석, 리팩터링 제안, 테스트 계획을 제공합니다.</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">코드 리뷰</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">버그 분석</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">리팩터링</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showToast('GitHub에서 skills/business-assistant/SKILL.md를 확인하세요.')">
+          <div class="card-header">
+            <div class="item-icon" style="background:rgba(16,185,129,0.12); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">📈</div>
+            <div class="card-title">Business Assistant</div>
+            <span class="item-badge badge-ready" style="margin-left:auto;">Ready</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">사업계획서 작성, 시장·경쟁사 분석, 비즈니스 전략 수립을 지원합니다.</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">사업계획서</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">시장 분석</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">전략 수립</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showToast('GitHub에서 skills/data-analyst/SKILL.md를 확인하세요.')">
+          <div class="card-header">
+            <div class="item-icon" style="background:rgba(232,130,74,0.12); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">📊</div>
+            <div class="card-title">Data Analyst</div>
+            <span class="item-badge badge-ready" style="margin-left:auto;">Ready</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">CSV 분석, 데이터 정제, 통계 분석, 차트 및 보고서 작성을 수행합니다.</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">EDA</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">통계 분석</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">시각화 코드</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showToast('GitHub에서 skills/legal-research/SKILL.md를 확인하세요.')">
+          <div class="card-header">
+            <div class="item-icon" style="background:rgba(139,92,246,0.12); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px;">⚖️</div>
+            <div class="card-title">Legal Research</div>
+            <span class="item-badge badge-ready" style="margin-left:auto;">Ready</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">대한민국 법령 조사, 판례 조사, 계약서 검토 지원, 쟁점 정리.</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">법령 조사</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">판례</span>
+              <span style="font-size:11px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--text-muted);">계약 검토</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ AGENTS ═══════════════ -->
+    <div class="page" id="page-agents">
+      <div class="page-header">
+        <div class="page-title">AI Agents</div>
+        <div class="page-desc">업무별 전문 에이전트 7종. 각 에이전트는 명확한 역할, 절차, 제한사항이 정의되어 있습니다.</div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <div class="item-list" style="gap:0;">
+            <div class="item-row" style="border-bottom:1px solid var(--border);">
+              <div class="item-icon" style="background:rgba(232,130,74,0.12); font-size:17px;">🔍</div>
+              <div class="item-info"><div class="item-name">Research Agent</div><div class="item-desc">다단계 심층 조사 · 출처 평가 · 종합 보고서</div></div>
+              <span class="item-badge badge-ready">Ready</span>
+            </div>
+            <div class="item-row" style="border-bottom:1px solid var(--border);">
+              <div class="item-icon" style="background:rgba(59,130,246,0.12); font-size:17px;">💻</div>
+              <div class="item-info"><div class="item-name">Coding Agent</div><div class="item-desc">아키텍처 설계 · 멀티파일 리뷰 · 디버깅</div></div>
+              <span class="item-badge badge-ready">Ready</span>
+            </div>
+            <div class="item-row" style="border-bottom:1px solid var(--border);">
+              <div class="item-icon" style="background:rgba(16,185,129,0.12); font-size:17px;">📈</div>
+              <div class="item-info"><div class="item-name">Business Agent</div><div class="item-desc">사업 전략 · SWOT · 비즈니스 모델 설계</div></div>
+              <span class="item-badge badge-ready">Ready</span>
+            </div>
+            <div class="item-row" style="border-bottom:1px solid var(--border);">
+              <div class="item-icon" style="background:rgba(139,92,246,0.12); font-size:17px;">⚖️</div>
+              <div class="item-info"><div class="item-name">Legal Research Agent</div><div class="item-desc">법령·판례 심층 분석 (법률 자문 아님)</div></div>
+              <span class="item-badge badge-ready">Ready</span>
+            </div>
+            <div class="item-row" style="border-bottom:1px solid var(--border);">
+              <div class="item-icon" style="background:rgba(232,130,74,0.12); font-size:17px;">📊</div>
+              <div class="item-info"><div class="item-name">Data Analysis Agent</div><div class="item-desc">ML 파이프라인 · 통계 모델링 · EDA</div></div>
+              <span class="item-badge badge-ready">Ready</span>
+            </div>
+            <div class="item-row" style="border-bottom:1px solid var(--border);">
+              <div class="item-icon" style="background:rgba(59,130,246,0.12); font-size:17px;">✍️</div>
+              <div class="item-info"><div class="item-name">Writing Agent</div><div class="item-desc">장문 문서 · 보고서 · 에세이 · 콘텐츠</div></div>
+              <span class="item-badge badge-ready">Ready</span>
+            </div>
+            <div class="item-row">
+              <div class="item-icon" style="background:rgba(16,185,129,0.12); font-size:17px;">⚙️</div>
+              <div class="item-info"><div class="item-name">Automation Agent</div><div class="item-desc">반복 작업 자동화 스크립트 · 워크플로우 설계</div></div>
+              <span class="item-badge badge-ready">Ready</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ COMMANDS ═══════════════ -->
+    <div class="page" id="page-commands">
+      <div class="page-header">
+        <div class="page-title">Command Center</div>
+        <div class="page-desc">Claude Code에서 바로 사용할 수 있는 8개의 슬래시 커맨드. 클릭하면 클립보드에 복사됩니다.</div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="cmd-table">
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Skill</th>
+                <th>설명</th>
+                <th>예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="copyCmd('/research [주제]')" style="cursor:pointer;" title="클릭하여 복사">
+                <td><span class="cmd-name">/research</span></td>
+                <td style="color:var(--text-muted); font-size:12px;">Research Assistant</td>
+                <td>주제를 체계적으로 조사하고 보고서를 생성</td>
+                <td style="font-size:11.5px; color:var(--text-muted);">/research "AI 반도체 시장"</td>
+              </tr>
+              <tr onclick="copyCmd('/analyze [데이터]')" style="cursor:pointer;" title="클릭하여 복사">
+                <td><span class="cmd-name">/analyze</span></td>
+                <td style="color:var(--text-muted); font-size:12px;">Data Analyst</td>
+                <td>데이터·코드·텍스트를 분석하여 인사이트 제공</td>
+                <td style="font-size:11.5px; color:var(--text-muted);">/analyze [CSV 데이터]</td>
+              </tr>
+              <tr onclick="copyCmd('/review [코드 또는 문서]')" style="cursor:pointer;" title="클릭하여 복사">
+                <td><span class="cmd-name">/review</span></td>
+                <td style="color:var(--text-muted); font-size:12px;">Coding Assistant</td>
+                <td>코드·문서·계획을 검토하고 개선 의견 제공</td>
+                <td style="font-size:11.5px; color:var(--text-muted);">/review [코드 블록]</td>
+              </tr>
+              <tr onclick="copyCmd('/report [주제] [데이터]')" style="cursor:pointer;" title="클릭하여 복사">
+                <td><span class="cmd-name">/report</span></td>
+                <td style="color:var(--text-muted); font-size:12px;">Document Assistant</td>
+                <td>구조화된 보고서를 생성</td>
+                <td style="font-size:11.5px; color:var(--text-muted);">/report "월간 성과" [데이터]</td>
+              </tr>
+              <tr onclick="copyCmd('/business-plan [사업 아이디어]')" style="cursor:pointer;" title="클릭하여 복사">
+                <td><span class="cmd-name">/business-plan</span></td>
+                <td style="color:var(--text-muted); font-size:12px;">Business Assistant</td>
+                <td>사업계획서를 구조화된 형식으로 작성</td>
+                <td style="font-size:11.5px; color:var(--text-muted);">/business-plan "AI 법률 서비스"</td>
+              </tr>
+              <tr onclick="copyCmd('/legal-research [법령 또는 쟁점]')" style="cursor:pointer;" title="클릭하여 복사">
+                <td><span class="cmd-name">/legal-research</span></td>
+                <td style="color:var(--text-muted); font-size:12px;">Legal Research</td>
+                <td>법령·판례 조사 및 법적 쟁점 정리 (정보 제공, 자문 아님)</td>
+                <td style="font-size:11.5px; color:var(--text-muted);">/legal-research "해고 요건"</td>
+              </tr>
+              <tr onclick="copyCmd('/summarize [텍스트]')" style="cursor:pointer;" title="클릭하여 복사">
+                <td><span class="cmd-name">/summarize</span></td>
+                <td style="color:var(--text-muted); font-size:12px;">Document Assistant</td>
+                <td>긴 문서를 핵심 중심으로 요약</td>
+                <td style="font-size:11.5px; color:var(--text-muted);">/summarize [기사 내용]</td>
+              </tr>
+              <tr onclick="copyCmd('/automate [작업 설명]')" style="cursor:pointer;" title="클릭하여 복사">
+                <td><span class="cmd-name">/automate</span></td>
+                <td style="color:var(--text-muted); font-size:12px;">Automation Agent</td>
+                <td>반복 작업을 자동화하는 스크립트를 설계</td>
+                <td style="font-size:11.5px; color:var(--text-muted);">/automate "매일 파일 백업"</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ MCP ═══════════════ -->
+    <div class="page" id="page-mcp">
+      <div class="page-header">
+        <div class="page-title">MCP Integrations</div>
+        <div class="page-desc">Model Context Protocol을 통한 외부 서비스 연동. 실제 연동은 사용자가 직접 설정합니다.</div>
+      </div>
+      <div style="background:var(--bg-elevated); border:1px solid var(--border-accent); border-radius:var(--radius); padding:14px 18px; margin-bottom:20px; display:flex; gap:12px; align-items:flex-start;">
+        <span style="font-size:16px;">ℹ️</span>
+        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
+          아래 MCP 연동은 <strong style="color:var(--text-primary);">설정 가이드 제공</strong> 단계입니다. 실제 연동을 위해서는 <code style="background:var(--bg-card); padding:1px 5px; border-radius:3px; font-size:12px;">.mcp.json.example</code>을 복사하여 API Key를 설정하고 Claude Code에서 MCP 서버를 활성화해야 합니다.
+        </div>
+      </div>
+      <div class="mcp-grid">
+        <div class="mcp-card">
+          <div class="mcp-top"><span class="mcp-icon">🐙</span><div><div class="mcp-name">GitHub</div><div class="mcp-status">가이드 제공</div></div></div>
+          <div class="mcp-desc">저장소 관리, 이슈 조회, PR 작성 등 GitHub 작업을 Claude에서 직접 수행합니다.</div>
+          <div class="mcp-action" onclick="showToast('.mcp.json.example의 github 섹션을 참조하세요.')">설정 가이드 보기 →</div>
+        </div>
+        <div class="mcp-card">
+          <div class="mcp-top"><span class="mcp-icon">📁</span><div><div class="mcp-name">Filesystem</div><div class="mcp-status">가이드 제공</div></div></div>
+          <div class="mcp-desc">로컬 파일 시스템 접근을 통해 파일을 읽고 작성합니다. API Key 불필요.</div>
+          <div class="mcp-action" onclick="showToast('.mcp.json.example의 filesystem 섹션을 참조하세요.')">설정 가이드 보기 →</div>
+        </div>
+        <div class="mcp-card">
+          <div class="mcp-top"><span class="mcp-icon">🔍</span><div><div class="mcp-name">Web Search</div><div class="mcp-status">가이드 제공 (Brave API)</div></div></div>
+          <div class="mcp-desc">실시간 웹 검색. Brave Search API 무료 플랜 월 2,000회 제공.</div>
+          <div class="mcp-action" onclick="showToast('Brave Search API Key 발급 후 .mcp.json.example을 참조하세요.')">설정 가이드 보기 →</div>
+        </div>
+        <div class="mcp-card">
+          <div class="mcp-top"><span class="mcp-icon">📓</span><div><div class="mcp-name">Notion</div><div class="mcp-status">가이드 제공</div></div></div>
+          <div class="mcp-desc">Notion 워크스페이스의 페이지와 데이터베이스를 Claude에서 읽고 씁니다.</div>
+          <div class="mcp-action" onclick="showToast('Notion Integration 생성 후 .mcp.json.example을 참조하세요.')">설정 가이드 보기 →</div>
+        </div>
+        <div class="mcp-card" style="opacity:0.6;">
+          <div class="mcp-top"><span class="mcp-icon">📧</span><div><div class="mcp-name">Gmail</div><div class="mcp-status">준비 중</div></div></div>
+          <div class="mcp-desc">Gmail 읽기·작성 연동. OAuth 설정 가이드 추후 제공 예정.</div>
+          <div class="mcp-action" style="color:var(--text-muted); cursor:default;">준비 중</div>
+        </div>
+        <div class="mcp-card" style="opacity:0.6;">
+          <div class="mcp-top"><span class="mcp-icon">📅</span><div><div class="mcp-name">Google Calendar</div><div class="mcp-status">준비 중</div></div></div>
+          <div class="mcp-desc">일정 조회 및 등록. OAuth 설정 가이드 추후 제공 예정.</div>
+          <div class="mcp-action" style="color:var(--text-muted); cursor:default;">준비 중</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ PROJECTS ═══════════════ -->
+    <div class="page" id="page-projects">
+      <div class="page-header">
+        <div class="page-title">Projects</div>
+        <div class="page-desc">Claude-Hub를 활용하는 연계 프로젝트 목록입니다.</div>
+      </div>
+      <div class="grid-2">
+        <a href="https://jaeyun0507.github.io/finance-customer-segmentation" target="_blank" rel="noopener" class="card" style="display:block; cursor:pointer;">
+          <div class="card-header">
+            <span style="font-size:20px;">📊</span>
+            <div class="card-title">Finance Customer Segmentation</div>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;">금융 고객 세분화 프로젝트. RFM 분석, K-Means 클러스터링, 대시보드 포함.</div>
+            <div style="margin-top:10px; font-size:12px; color:var(--accent);">GitHub Pages 배포 →</div>
+          </div>
+        </a>
+        <div class="card" style="border-style:dashed; opacity:0.5;">
+          <div class="card-header">
+            <span style="font-size:20px;">➕</span>
+            <div class="card-title">새 프로젝트 추가</div>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px; color:var(--text-muted); line-height:1.6;">Claude-Hub Skills를 활용하는 새 프로젝트를 연결합니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ DOCS ═══════════════ -->
+    <div class="page" id="page-docs">
+      <div class="page-header">
+        <div class="page-title">Documentation</div>
+        <div class="page-desc">Claude-Hub 사용 가이드 및 기술 문서. GitHub에서 전체 내용을 확인하세요.</div>
+      </div>
+      <div class="doc-grid">
+        <a href="https://github.com/JaeYun0507/Claude-Hub/blob/main/README.md" target="_blank" rel="noopener" class="doc-card">
+          <div class="doc-emoji">📖</div>
+          <div class="doc-name">README</div>
+          <div class="doc-desc">프로젝트 개요, 설치 방법, 빠른 시작 가이드</div>
+        </a>
+        <a href="https://github.com/JaeYun0507/Claude-Hub/blob/main/.claude-plugin/plugin.json" target="_blank" rel="noopener" class="doc-card">
+          <div class="doc-emoji">🔌</div>
+          <div class="doc-name">Plugin Guide</div>
+          <div class="doc-desc">Claude Code 플러그인 설치 및 설정 방법</div>
+        </a>
+        <a href="https://github.com/JaeYun0507/Claude-Hub/tree/main/skills" target="_blank" rel="noopener" class="doc-card">
+          <div class="doc-emoji">⭐</div>
+          <div class="doc-name">Skills Guide</div>
+          <div class="doc-desc">6개 Skills 상세 사용법 및 출력 형식</div>
+        </a>
+        <a href="https://github.com/JaeYun0507/Claude-Hub/tree/main/agents" target="_blank" rel="noopener" class="doc-card">
+          <div class="doc-emoji">🤖</div>
+          <div class="doc-name">Agents Guide</div>
+          <div class="doc-desc">7개 Agent 역할, 절차, 협업 방식</div>
+        </a>
+        <a href="https://github.com/JaeYun0507/Claude-Hub/tree/main/commands" target="_blank" rel="noopener" class="doc-card">
+          <div class="doc-emoji">⌨️</div>
+          <div class="doc-name">Commands Guide</div>
+          <div class="doc-desc">8개 슬래시 커맨드 사용법 및 옵션</div>
+        </a>
+        <a href="https://github.com/JaeYun0507/Claude-Hub/blob/main/.mcp.json.example" target="_blank" rel="noopener" class="doc-card">
+          <div class="doc-emoji">🔗</div>
+          <div class="doc-name">MCP Guide</div>
+          <div class="doc-desc">외부 서비스 연동 설정 방법 (.mcp.json.example)</div>
+        </a>
+        <a href="https://github.com/JaeYun0507/Claude-Hub/blob/main/CHANGELOG.md" target="_blank" rel="noopener" class="doc-card">
+          <div class="doc-emoji">📋</div>
+          <div class="doc-name">Changelog</div>
+          <div class="doc-desc">버전별 변경사항 및 업데이트 내역</div>
+        </a>
+        <a href="https://github.com/JaeYun0507/Claude-Hub/blob/main/SECURITY.md" target="_blank" rel="noopener" class="doc-card">
+          <div class="doc-emoji">🔒</div>
+          <div class="doc-name">Security</div>
+          <div class="doc-desc">보안 정책 및 취약점 보고 방법</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═══════════════ SETTINGS ═══════════════ -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div class="page-title">Settings</div>
+        <div class="page-desc">Claude-Hub 대시보드 설정. 현재 로컬스토리지에 저장됩니다.</div>
+      </div>
+      <div class="card" style="max-width:520px;">
+        <div class="card-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <div class="card-title">General</div>
+        </div>
+        <div class="card-body" style="display:flex; flex-direction:column; gap:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:13.5px; font-weight:600;">Plugin Version</div>
+              <div style="font-size:12px; color:var(--text-muted);">현재 claude-hub 버전</div>
+            </div>
+            <span style="font-family:monospace; font-size:12.5px; background:var(--bg-elevated); border:1px solid var(--border); padding:4px 10px; border-radius:5px; color:var(--accent);">v1.0.0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:13.5px; font-weight:600;">GitHub Repository</div>
+              <div style="font-size:12px; color:var(--text-muted);">소스코드 및 플러그인 파일</div>
+            </div>
+            <a href="https://github.com/JaeYun0507/Claude-Hub" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:12px; padding:5px 11px;">열기 →</a>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:13.5px; font-weight:600;">PWA 설치</div>
+              <div style="font-size:12px; color:var(--text-muted);">브라우저 주소창 옆 설치 아이콘을 클릭하세요</div>
+            </div>
+            <span id="pwaStatus" style="font-size:12px; color:var(--text-muted);">확인 중...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-items">
+    <div class="mobile-nav-item active" data-page="overview" onclick="navigate('overview', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Overview</span>
+    </div>
+    <div class="mobile-nav-item" data-page="skills" onclick="navigate('skills', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span>Skills</span>
+    </div>
+    <div class="mobile-nav-item" data-page="agents" onclick="navigate('agents', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Agents</span>
+    </div>
+    <div class="mobile-nav-item" data-page="commands" onclick="navigate('commands', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <span>Commands</span>
+    </div>
+    <div class="mobile-nav-item" data-page="docs" onclick="navigate('docs', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Docs</span>
+    </div>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Navigation ────────────────────────────────────────────
+  const PAGE_TITLES = {
+    overview: 'Overview',
+    skills: 'Skills Library',
+    agents: 'AI Agents',
+    commands: 'Command Center',
+    mcp: 'MCP Integrations',
+    projects: 'Projects',
+    docs: 'Documentation',
+    settings: 'Settings'
+  };
+
+  function navigate(pageId, triggerEl) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    // Show target page
+    const page = document.getElementById('page-' + pageId);
+    if (page) page.classList.add('active');
+
+    // Update sidebar nav
+    document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+    const sidebarItem = document.querySelector(`.sidebar .nav-item[data-page="${pageId}"]`);
+    if (sidebarItem) sidebarItem.classList.add('active');
+
+    // Update mobile nav
+    document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+    const mobileItem = document.querySelector(`.mobile-nav-item[data-page="${pageId}"]`);
+    if (mobileItem) mobileItem.classList.add('active');
+
+    // Update header title
+    const headerTitle = document.getElementById('headerTitle');
+    if (headerTitle) headerTitle.textContent = PAGE_TITLES[pageId] || pageId;
+
+    // Scroll to top
+    document.querySelector('.main').scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  // ── Toast ─────────────────────────────────────────────────
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── Copy Command ──────────────────────────────────────────
+  function copyCmd(cmd) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(cmd).then(() => showToast('복사됨: ' + cmd));
+    } else {
+      showToast('복사: ' + cmd);
+    }
+  }
+
+  // ── PWA Registration ──────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/public/sw.js').then(reg => {
+        console.log('[SW] Registered:', reg.scope);
+        const pwaEl = document.getElementById('pwaStatus');
+        if (pwaEl) pwaEl.textContent = 'Service Worker 등록됨';
+      }).catch(err => {
+        console.warn('[SW] Registration failed:', err);
+        const pwaEl = document.getElementById('pwaStatus');
+        if (pwaEl) pwaEl.textContent = '로컬 실행 시 미지원';
+      });
+    });
+  }
+
+  // ── Hash Routing ──────────────────────────────────────────
+  function handleHash() {
+    const hash = location.hash.replace('#', '') || 'overview';
+    const valid = Object.keys(PAGE_TITLES);
+    if (valid.includes(hash)) navigate(hash, null);
+  }
+  window.addEventListener('hashchange', handleHash);
+  handleHash();
+</script>
+</body>
+</html>
